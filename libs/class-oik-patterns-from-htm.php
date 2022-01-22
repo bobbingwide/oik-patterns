@@ -18,13 +18,15 @@ class OIK_Patterns_From_Htm {
 
 	function __construct() {
 
+
 	}
 
 	/**
 	 * Hardcoded at present.
 	 */
 	function list_themes() {
-		$this->themes = ['thisis'];
+		$this->themes = ['thisis', 'fizzie', 'twentytwentytwo'];
+
 	}
 
 	function register_patterns() {
@@ -43,7 +45,7 @@ class OIK_Patterns_From_Htm {
 
 	function list_files() {
 		$theme_dir_root = dirname( get_stylesheet_directory() );
-		$mask = $theme_dir_root . '/' . $this->theme .'/block-template-parts/*.htm';
+		$mask = $theme_dir_root . '/' . $this->theme .'/patterns/*.html';
 		$this->files = glob( $mask );
 		bw_trace2( $this->files, $mask );
 	}
@@ -82,6 +84,21 @@ class OIK_Patterns_From_Htm {
 	function register_pattern() {
 		$this->load_pattern();
 		register_block_pattern( $this->pattern_name, $this->pattern_properties );
+	}
+
+	function get_file_list($dir, $mask) {
+		$files = glob($dir .'/' . $mask);
+		return $files;
+	}
+
+	function get_subdir_file_list( $theme_dir, $mask ) {
+		$files2 = [];
+		$subdirs = glob( $theme_dir . '/*',  GLOB_ONLYDIR  );
+		foreach ( $subdirs as $subdir ) {
+			$files = $this->get_file_list( $subdir, $mask );
+			$files2 = array_merge( $files2, $files );
+		}
+		return $files2;
 	}
 
 }
