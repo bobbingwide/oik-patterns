@@ -12,7 +12,7 @@ Domain Path: /languages/
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-    Copyright 2020-2021 Bobbing Wide (email : herb@bobbingwide.com )
+    Copyright 2020-2022 Bobbing Wide (email : herb@bobbingwide.com )
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 2,
@@ -31,19 +31,122 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 /**
- * We're dependent upon oik
+ *
  */
 function oik_patterns_loaded() {
 	add_action( 'oik_loaded', 'oik_patterns_init', 20 );
+    add_action( 'run_oik-patterns.php', 'oik_patterns_run_oik_patterns');
+    add_action( 'plugins_loaded', 'oik_patterns_plugins_loaded');
+    add_action( 'setup_theme', 'oik_patterns_setup_theme');
+    add_filter( 'template', 'oik_patterns_template');
+    add_filter( 'stylesheet', 'oik_patterns_stylesheet');
+    //add_action( 'after_setup_theme', 'oik_patterns_after_setup_theme');
+    add_action( 'init', 'oik_patterns_maybe_cache_patterns', 9999 );
 }
 
+/**
+ * Registers patterns on behalf of lazy themes.
+ * We're dependent upon oik
+ */
 function oik_patterns_init() {
 	//oik_require( 'patterns/index.php', 'oik-patterns');
 	//oik_blocks_lazy_register_block_patterns();
-
 	oik_require( 'libs/class-oik-patterns-from-htm.php', 'oik-patterns');
 	$oik_patterns = new OIK_Patterns_From_Htm();
 	$oik_patterns->register_patterns();
+}
+
+function oik_patterns_plugins_loaded() {
+   // echo "oik patterns plugins_loaded";
+   bw_backtrace();
+
+
+}
+
+function oik_patterns_setup_theme( $theme ) {
+    //echo "oik patterns setup_theme";
+    bw_trace2();
+    bw_backtrace();
+}
+
+/**
+ * Exports patterns in batch mode.
+ *
+ * Note: oik-batch doesn't support dynamically changing the theme under oik-batch since
+ * by the time this gets run the theme has already been selected and loaded.
+ *
+ * @TODO The best we can do is to invoke the request in a remote request.
+ */
+function oik_patterns_run_oik_patterns() {
+
+}
+
+function oik_patterns_cache_patterns( $theme ) {
+    oik_require( 'libs/class-oik-patterns-export.php', 'oik-patterns');
+    $oik_patterns_export = new OIK_patterns_export( $theme );
+    $oik_patterns_export->cache_theme_patterns();
+
+}
+
+/**
+ * Implements `template` filter.
+ *
+ * We can filter the value of the template to change the template to the one were interested in.
+ *
+ * So how do we decide what to do?
+ * Can we determine it from the URL?
+ * https://s.b/oikcom/oik-themes/thisis-experimental-full-site-editing-theme/?oik-tab=patterns
+ *
+ * Well, we can't directly determine the theme name from this URL
+ * so perhaps we need another query parameter.  eg preview_theme=thisis
+ *
+ * @TODO Cater for child themes. eg  Geologist which is a child theme of Blockbase
+ * It may be necessary to set a preview_template query parameter as well.
+ *
+ * @param $template
+ * @return mixed
+ */
+function oik_patterns_template( $template ) {
+    $preview_theme = bw_array_get( $_REQUEST, 'preview_theme', null );
+
+    bw_trace2( $preview_theme, "preview_theme" );
+    //echo "$template $preview_theme ";
+    if ( $preview_theme ) {
+        $template = $preview_theme;
+    }
+    return $template;
+}
+
+/**
+ * Implements `stylesheet` filter.
+ *
+ * @param $stylesheet
+ * @return mixed
+ */
+function oik_patterns_stylesheet( $stylesheet ) {
+    $preview_theme = bw_array_get( $_REQUEST, 'preview_theme', null );
+
+    bw_trace2( $preview_theme, "preview_theme" );
+    //echo "$stylesheet $preview_theme ";
+    if ( $preview_theme ) {
+        $stylesheet = $preview_theme;
+    }
+    return $stylesheet;
+}
+
+/**
+ * Cache patterns any time a theme is being previewed.
+ *
+ * @TODO Implement logic to reduce the number of times this is done.
+ *
+ * @param $args
+ */
+
+function oik_patterns_maybe_cache_patterns( $args ) {
+    $preview_theme = bw_array_get( $_REQUEST, 'preview_theme', null );
+    if ( $preview_theme) {
+        oik_patterns_cache_patterns( $preview_theme );
+    }
 
 }
 
