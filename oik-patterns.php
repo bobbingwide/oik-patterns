@@ -3,8 +3,8 @@
 /*
 Plugin Name: oik-patterns
 Plugin URI: https://www.oik-plugins.com/oik-plugins/oik-patterns
-Description: Patterns for the Gutenberg block editor
-Version: 0.0.0
+Description: Loads and caches patterns for the Gutenberg block editor
+Version: 0.1.0
 Author: bobbingwide
 Author URI: https://bobbingwide.com/about-bobbing-wde
 Text Domain: oik-patterns
@@ -31,7 +31,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 /**
- *
+ * 
  */
 function oik_patterns_loaded() {
 	add_action( 'oik_loaded', 'oik_patterns_init', 20 );
