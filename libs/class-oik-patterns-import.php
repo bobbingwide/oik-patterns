@@ -185,4 +185,13 @@ class OIK_patterns_import {
 
     }
 
+    function count_patterns() {
+    	$this->load_patterns_json();
+    	if ( $this->patterns_json  ) {
+		    return count( $this->patterns );
+	    }
+    	$link = '<a href="?preview_theme=' . $this->theme . '">?</a>';
+    	return $link;
+    }
+
 }
