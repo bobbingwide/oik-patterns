@@ -2,7 +2,7 @@
 
 /**
  * Class OIK_Patterns_From_Htm
- * @copyright (C) Copyright Bobbing Wide 2021
+ * @copyright (C) Copyright Bobbing Wide 2021,2022
  * @package oik-patterns
  */
 
@@ -25,7 +25,7 @@ class OIK_Patterns_From_Htm {
 	 * Hardcoded at present.
 	 */
 	function list_themes() {
-		$this->themes = ['thisis', 'fizzie', 'twentytwentytwo'];
+		$this->themes = ['thisis', 'fizzie', 'wizzie', 'sb', 'written'];
 
 	}
 
@@ -65,7 +65,7 @@ class OIK_Patterns_From_Htm {
 	function load_pattern() {
 		$this->pattern_name =  $this->theme . '/' . $this->filename;
 		$this->pattern_properties = [];
-		$this->pattern_properties['title'] = $this->filename;
+		$this->pattern_properties['title'] = $this->get_title();
 		$content = file_get_contents( $this->file );
 		if ( $content === false ) {
 			gob();
@@ -74,6 +74,15 @@ class OIK_Patterns_From_Htm {
 		$this->pattern_properties['content'] = $content;
 		$this->pattern_properties['categories'] = [ $this->theme ];
 	}
+
+	function get_title() {
+
+	    $title = $this->filename;
+	    $title = str_replace( '-', ' ', $title );
+	    $title = str_replace( '.html', '', $title );
+	    $title = ucfirst( $title );
+	    return $title;
+    }
 
 	function register_block_pattern_category() {
 		$category_name = $this->theme;
