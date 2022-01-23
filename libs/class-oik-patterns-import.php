@@ -44,17 +44,30 @@ class OIK_patterns_import {
 
         h3( $pattern->title );
         sdiv( 'pattern');
-
+		sdiv( 'cached');
         $cached_pattern = $this->get_cached_file( $pattern );
+
         e( $cached_pattern );
+        ediv();
         p( $pattern->name );
         if ( isset( $pattern->categories )) {
-            p(implode(',', $pattern->categories));
+            p( "Categories: " . implode(',', $pattern->categories));
         }
-        stag( 'pre', 'pattern', null, 'style="font-size:12px;"');
-        e( esc_html( $cached_pattern ));
-        etag( 'pre');
+        $this->display_cached_pattern_source( $cached_pattern );
+
         ediv();
+    }
+
+    function display_cached_pattern_source( $cached_pattern ) {
+	    stag( 'pre', 'pattern', null, 'style="font-size:12px;"');
+	    $escaped = esc_html( $cached_pattern );
+	    $lines = explode( "\n", $escaped );
+	    $reformed = '';
+	    foreach ( $lines as $line ) {
+	    	$reformed .= trim( $line ) . "\n";
+	    }
+	    e( $reformed );
+	    etag( 'pre');
     }
 
     function get_cached_file( $pattern ) {
