@@ -1,23 +1,22 @@
 <?php
 
+/**
+ * @copyright (C) Copyright Bobbing Wide 2022
+ * @package oik-patterns
+ */
+
 class OIK_patterns_export {
 
     private $patterns;
     private $patterns_json;
     private $theme;
+    private $theme_info;
     private $template;
 
 
     function __construct( $theme=null ) {
         $this->theme = $theme;
         $this->template = $theme;
-        if ( $theme ) {
-            //echo "Exporting patterns for: $theme";
-        } else {
-            //echo "Exporting patterns for current theme";
-        }
-
-
     }
 
     function cache_theme_patterns() {
@@ -173,7 +172,7 @@ class OIK_patterns_export {
 	function check_theme_and_template() {
 		$is_valid = false;
 		$theme = wp_get_theme( $this->theme );
-	//print_r( $theme );
+		$this->theme_info = $theme;
 		if ( $theme->exists() ) {
 			$this->template = $theme->get_template();
 			if ( $theme->get_stylesheet() === $this->template  ) {
@@ -234,30 +233,44 @@ class OIK_patterns_export {
 	}
 
 	/**
-	 * Cache patterns any time a theme is being previewed.
+	 * Cache patterns when a theme is being previewed, if necessary.
 	 *
-	 * @TODO Implement logic to reduce the number of times this is done.
+	 * If the patterns.json file exists and is newer than the stylesheet then
+	 * further caching isn't necessary.
 	 *
 	 * @param $args
 	 */
-
 	function oik_patterns_maybe_cache_patterns( $args ) {
+		$needs_caching = false;
+		$patterns_json_file = $this->get_patterns_json_file();
+		if ( file_exists( $patterns_json_file ) ) {
+			$patterns_cached_time = filemtime( $patterns_json_file );
+			//echo "Doesn't need caching?" . $patterns_cached_time;
+			//$stylesheet_time =
+			//print_r( $this->theme_info );
+			$stylesheet_time = $this->get_stylesheet_time();
+			//echo "Stylesheet time: " . $stylesheet_time;
+			$needs_caching = $stylesheet_time >= $patterns_cached_time;
 
-		$this->oik_patterns_cache_patterns();
-
-
+		} else {
+			$needs_caching = true;
+		}
+		if ( $needs_caching ) {
+			//echo "Needs caching: " . $patterns_json_file;
+			$this->cache_theme_patterns();
+		}
 	}
 
-	function oik_patterns_cache_patterns() {
-		oik_require( 'libs/class-oik-patterns-export.php', 'oik-patterns');
-		$oik_patterns_export = new OIK_patterns_export( $this->theme );
-		$oik_patterns_export->cache_theme_patterns();
-
+	/**
+	 * Returns the timestamp of the theme's style.css
+	 *
+	 * @return int
+	 */
+	function get_stylesheet_time() {
+		$theme_root = get_theme_root( $this->theme );
+		$theme_file = $theme_root . '/' . $this->theme . '/style.css';
+		$stylesheet_time = filemtime( $theme_file );
+		return $stylesheet_time;
 	}
-
-
-
-
-
 
 }
