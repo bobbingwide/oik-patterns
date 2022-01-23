@@ -4,7 +4,7 @@
 * Tags:              block patterns
 * Requires at least: 5.6.0
 * Tested up to:      5.9-RC3
-* Stable tag:        0.1.0
+* Stable tag:        0.1.1
 * Requires PHP:      7.3.0
 * License:           GPL 3.0
 * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -47,6 +47,9 @@ AND if I implement code to look in the user's current locale.
 
 
 ## Upgrade Notice 
+# 0.1.1 
+Update for theme and template validation for preview_theme query arg
+
 # 0.1.0 
 Update for pattern caching and improved loading from the patterns folder.
 
@@ -55,6 +58,8 @@ This is a prototype plugin.
 
 
 ## Changelog 
+# 0.1.1 
+* Changed: Add theme and template validation for preview_theme query arg #4
 
 # 0.1.0 
 * Changed: Improve count_patterns() for uncached patterns #4
