@@ -35,18 +35,17 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 function oik_patterns_loaded() {
 	add_action( 'oik_loaded', 'oik_patterns_init', 20 );
-    add_action( 'run_oik-patterns.php', 'oik_patterns_run_oik_patterns');
-    add_action( 'plugins_loaded', 'oik_patterns_plugins_loaded');
-    add_action( 'setup_theme', 'oik_patterns_setup_theme');
-    add_filter( 'template', 'oik_patterns_template');
-    add_filter( 'stylesheet', 'oik_patterns_stylesheet');
+	add_action( 'plugins_loaded', 'oik_patterns_plugins_loaded');
+
     //add_action( 'after_setup_theme', 'oik_patterns_after_setup_theme');
-    add_action( 'init', 'oik_patterns_maybe_cache_patterns', 9999 );
+
+
 }
 
 /**
- * Registers patterns on behalf of lazy themes.
- * We're dependent upon oik
+ * Registers .html patterns on behalf of lazy themes.
+ *
+ * We're dependent upon oik.
  */
 function oik_patterns_init() {
 	//oik_require( 'patterns/index.php', 'oik-patterns');
@@ -59,27 +58,19 @@ function oik_patterns_init() {
 function oik_patterns_plugins_loaded() {
    // echo "oik patterns plugins_loaded";
    bw_backtrace();
+	if ( oik_patterns_validate_theme() ) {
+
+		//add_action( 'setup_theme', 'oik_patterns_setup_theme');
+		//add_filter( 'template', 'oik_patterns_template');
+		//add_filter( 'stylesheet', 'oik_patterns_stylesheet');
+		//add_action( 'init', 'oik_patterns_maybe_cache_patterns', 9999 );
+
+	}
 
 
 }
 
-function oik_patterns_setup_theme( $theme ) {
-    //echo "oik patterns setup_theme";
-    bw_trace2();
-    bw_backtrace();
-}
 
-/**
- * Exports patterns in batch mode.
- *
- * Note: oik-batch doesn't support dynamically changing the theme under oik-batch since
- * by the time this gets run the theme has already been selected and loaded.
- *
- * @TODO The best we can do is to invoke the request in a remote request.
- */
-function oik_patterns_run_oik_patterns() {
-
-}
 
 function oik_patterns_cache_patterns( $theme ) {
     oik_require( 'libs/class-oik-patterns-export.php', 'oik-patterns');
@@ -148,6 +139,17 @@ function oik_patterns_maybe_cache_patterns( $args ) {
         oik_patterns_cache_patterns( $preview_theme );
     }
 
+}
+
+function oik_patterns_validate_theme() {
+	$is_valid = false;
+	if ( isset( $_REQUEST['preview_theme'])) {
+		$theme = $_REQUEST['preview_theme'];
+		oik_require( 'libs/class-oik-patterns-export.php', 'oik-patterns');
+		$oik_patterns_export = new OIK_patterns_export( $theme );
+		$is_valid = $oik_patterns_export->validate_theme();
+	}
+	return $is_valid;
 }
 
 oik_patterns_loaded();

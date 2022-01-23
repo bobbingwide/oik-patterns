@@ -5,21 +5,24 @@ class OIK_patterns_export {
     private $patterns;
     private $patterns_json;
     private $theme;
+    private $template;
 
 
     function __construct( $theme=null ) {
         $this->theme = $theme;
+        $this->template = $theme;
         if ( $theme ) {
             //echo "Exporting patterns for: $theme";
         } else {
             //echo "Exporting patterns for current theme";
         }
-        $this->patterns = WP_Block_Patterns_Registry::get_instance()->get_all_registered();
-        bw_backtrace();
+
 
     }
 
     function cache_theme_patterns() {
+    	$this->patterns = WP_Block_Patterns_Registry::get_instance()->get_all_registered();
+	    bw_backtrace();
         //echo "export_patterns";
         bw_trace2( $this->patterns, "patterns", false );
         $this->build_patterns_json();
@@ -40,7 +43,7 @@ class OIK_patterns_export {
     /**
      * Builds a JSON file containing the patterns for the theme.
      *
-     * This assumes that theme's patterns are prefixed by the theme name.
+     * This assumes that the theme's patterns are prefixed by the theme name.
      *
      */
     function build_patterns_json() {
@@ -144,5 +147,117 @@ class OIK_patterns_export {
     function get_pattern_content( $pattern) {
         return $pattern['content'];
     }
+
+	/**
+	 * Validates the theme to be installed.
+	 *
+	 * If valid then it sets up the other filters to support previewing.
+	 * @return bool
+	 */
+    function validate_theme() {
+    	$is_valid = $this->check_theme_and_template();
+    	if ( $is_valid ) {
+		    add_action( 'setup_theme', [$this,'oik_patterns_setup_theme']);
+		    add_filter( 'template', [$this,'oik_patterns_template']);
+		    add_filter( 'stylesheet', [$this, 'oik_patterns_stylesheet']);
+		    add_action( 'init', [$this,'oik_patterns_maybe_cache_patterns'], 9999 );
+	    }
+    	return $is_valid;
+	}
+
+	/**
+	 * Checks for the existence of the theme and template.
+	 *
+	 * Do we need to validate the theme name; can we trust WordPress core functions?
+	 */
+	function check_theme_and_template() {
+		$is_valid = false;
+		$theme = wp_get_theme( $this->theme );
+	//print_r( $theme );
+		if ( $theme->exists() ) {
+			$this->template = $theme->get_template();
+			if ( $theme->get_stylesheet() === $this->template  ) {
+				$is_valid =true;
+			} else {
+				$template=wp_get_theme( $this->template );
+				if (  $template->exists() ) {
+					$is_valid =true;
+				}
+			}
+		}
+		//print_r( $theme );
+		//$this->template = $this->check_theme();
+
+		return $is_valid;
+
+	}
+
+
+	function oik_patterns_setup_theme( $theme ) {
+		//echo "oik patterns setup_theme";
+		bw_trace2();
+		bw_backtrace();
+	}
+
+	/**
+	 * Implements `template` filter.
+	 *
+	 * We can filter the value of the template to change the template to the one were interested in.
+	 *
+	 * So how do we decide what to do?
+	 * Can we determine it from the URL?
+	 * https://s.b/oikcom/oik-themes/thisis-experimental-full-site-editing-theme/?oik-tab=patterns
+	 *
+	 * Well, we can't directly determine the theme name from this URL
+	 * so perhaps we need another query parameter.  eg preview_theme=thisis
+	 *
+	 * @TODO Cater for child themes. eg  Geologist which is a child theme of Blockbase
+	 * It may be necessary to set a preview_template query parameter as well.
+	 *
+	 * @param $template
+	 * @return mixed
+	 */
+	function oik_patterns_template( $template ) {
+		$template = $this->template;
+		return $template;
+	}
+
+	/**
+	 * Implements `stylesheet` filter.
+	 *
+	 * @param $stylesheet
+	 * @return mixed
+	 */
+	function oik_patterns_stylesheet( $stylesheet ) {
+		$stylesheet = $this->theme;
+		return $stylesheet;
+	}
+
+	/**
+	 * Cache patterns any time a theme is being previewed.
+	 *
+	 * @TODO Implement logic to reduce the number of times this is done.
+	 *
+	 * @param $args
+	 */
+
+	function oik_patterns_maybe_cache_patterns( $args ) {
+
+		$this->oik_patterns_cache_patterns();
+
+
+	}
+
+	function oik_patterns_cache_patterns() {
+		oik_require( 'libs/class-oik-patterns-export.php', 'oik-patterns');
+		$oik_patterns_export = new OIK_patterns_export( $this->theme );
+		$oik_patterns_export->cache_theme_patterns();
+
+	}
+
+
+
+
+
 
 }
