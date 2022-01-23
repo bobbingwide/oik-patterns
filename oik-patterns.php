@@ -4,7 +4,7 @@
 Plugin Name: oik-patterns
 Plugin URI: https://www.oik-plugins.com/oik-plugins/oik-patterns
 Description: Loads and caches patterns for the Gutenberg block editor
-Version: 0.1.1
+Version: 0.1.2
 Author: bobbingwide
 Author URI: https://bobbingwide.com/about-bobbing-wde
 Text Domain: oik-patterns
