@@ -6,7 +6,6 @@
  * @package oik-patterns
  */
 
-
 class OIK_Patterns_From_Htm {
 
 	private $pattern_name = null; // theme/filename
@@ -14,6 +13,7 @@ class OIK_Patterns_From_Htm {
 	private $filename = null ; // eg 404-template.htm
 	private $themes = null;
 	private $theme = 'thisis';
+	private $theme_name = 'ThisIs...'; // Theme name
 	private $files = [];
 
 	function __construct() {
@@ -22,22 +22,47 @@ class OIK_Patterns_From_Htm {
 	}
 
 	/**
-	 * Hardcoded at present.
+	 * Builds an array of block themes.
+	 *
+	 * Originally hard coded to return: thisis, fizzie, wizzie, sb and written
+	 * this now returns an array of block themes.
+	 *
+	 * Any one of these themes may contain a `patterns` folder which contains `.html` patterns.
+	 * Or it may contain patterns which are registered from `.php` files.
+	 *
+	 * @returns array Associative array of slug to name
 	 */
 	function list_themes() {
-		$this->themes = ['thisis', 'fizzie', 'wizzie', 'sb', 'written'];
-		//$this->themes = ['fizzie'];
+		$themes = wp_get_themes();
+		$this->themes = [];
+		foreach ( $themes as $key => $theme  ) {
+			if ( $theme->is_block_theme() ) {
+				$this->themes[ $key ]=$theme->display( 'Name' );
+			}
+		}
+	}
+
+	/**
+	 * Returns the list of themes.
+	 *
+	 * Assumes list_themes() has been called.
+	 *
+	 * @return array
+	 */
+	function get_themes() {
+		return $this->themes;
 	}
 
 	function register_patterns() {
 		$this->list_themes();
-		foreach ( $this->themes as $this->theme ) {
+		foreach ( $this->themes as $this->theme => $this->theme_name ) {
 			$this->register_block_pattern_category();
 			//$this->list_files();
 			$this->files = $this->get_all_patterns( $this->theme );
 			foreach ( $this->files as $file ) {
 				$this->file = $file;
 				$this->filename = basename( $file );
+				$this->register_categories();
 				$this->register_pattern();
 			}
 		}
@@ -72,13 +97,15 @@ class OIK_Patterns_From_Htm {
 		if ( $content === false ) {
 			gob();
 		}
-		bw_trace2( $content, $this->file  );
+		//bw_trace2( $content, $this->file  );
 		$this->pattern_properties['content'] = $content;
-		$this->pattern_properties['categories'] = [ $this->theme ];
+
+		// Set categories based on sub-folders and add the theme for good measure.
+		$this->pattern_properties['categories'] = $this->categories ;
+		$this->pattern_properties['categories'][] = $this->theme;
 	}
 
 	function get_title() {
-
 	    $title = $this->filename;
 	    $title = str_replace( '-', ' ', $title );
 	    $title = str_replace( '.html', '', $title );
@@ -86,10 +113,51 @@ class OIK_Patterns_From_Htm {
 	    return $title;
     }
 
+    function get_label( $part ) {
+		$title = $part;
+	    $title = str_replace( '-', ' ', $title );
+	    $title = str_replace( '.html', '', $title );
+	    $title = ucfirst( $title );
+	    return $title;
+    }
+
+	/**
+	 * Registers the pattern category for the theme.
+	 *
+	 * @TODO Get the proper theme name using wp_get_theme();
+	 */
 	function register_block_pattern_category() {
 		$category_name = $this->theme;
-		$category_properties = [ 'label' => $category_name ];
+		$category_properties = [ 'label' => $this->theme_name ];
 		register_block_pattern_category( $category_name, $category_properties );
+	}
+
+	/**
+	 * Registers categories for each subfolder under patterns.
+	 *
+	 *
+	 */
+
+	function register_categories() {
+		$this->categories = [];
+		//echo $this->file;
+		$parts = explode( '/', $this->file );
+		array_pop( $parts );
+		$patterns_found = false;
+		foreach ( $parts as $part ) {
+			//echo $part;
+			if ( $part === 'patterns') {
+				$patterns_found = true;
+				continue;
+			}
+			if ( $patterns_found ) {
+				$this->categories[] =$part;
+				$category_properties=[ 'label'=> $this->get_label( $part ) ];
+				register_block_pattern_category( $part, $category_properties );
+			}
+		}
+		//print_r( $this->categories );
+
 	}
 
 	function register_pattern() {
