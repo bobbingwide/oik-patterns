@@ -17,8 +17,6 @@ class OIK_Patterns_From_Htm {
 	private $files = [];
 
 	function __construct() {
-
-
 	}
 
 	/**
@@ -66,15 +64,13 @@ class OIK_Patterns_From_Htm {
 				$this->register_pattern();
 			}
 		}
-
 	}
 
 	function list_files() {
 		$theme_dir_root = dirname( get_stylesheet_directory() );
 		$mask = $theme_dir_root . '/' . $this->theme .'/patterns/*.html';
 		$this->files = glob( $mask );
-		bw_trace2( $this->files, $mask );
-
+		//bw_trace2( $this->files, $mask );
 	}
 
 	/**
@@ -124,7 +120,6 @@ class OIK_Patterns_From_Htm {
 	/**
 	 * Registers the pattern category for the theme.
 	 *
-	 * @TODO Get the proper theme name using wp_get_theme();
 	 */
 	function register_block_pattern_category() {
 		$category_name = $this->theme;
@@ -135,17 +130,13 @@ class OIK_Patterns_From_Htm {
 	/**
 	 * Registers categories for each subfolder under patterns.
 	 *
-	 *
 	 */
-
 	function register_categories() {
 		$this->categories = [];
-		//echo $this->file;
 		$parts = explode( '/', $this->file );
 		array_pop( $parts );
 		$patterns_found = false;
 		foreach ( $parts as $part ) {
-			//echo $part;
 			if ( $part === 'patterns') {
 				$patterns_found = true;
 				continue;
@@ -156,31 +147,12 @@ class OIK_Patterns_From_Htm {
 				register_block_pattern_category( $part, $category_properties );
 			}
 		}
-		//print_r( $this->categories );
-
 	}
 
 	function register_pattern() {
 		$this->load_pattern();
 		register_block_pattern( $this->pattern_name, $this->pattern_properties );
 	}
-
-	/*
-	function get_file_list($dir, $mask) {
-		$files = glob($dir .'/' . $mask);
-		return $files;
-	}
-
-	function get_subdir_file_list( $theme_dir, $mask ) {
-		$files2 = [];
-		$subdirs = glob( $theme_dir . '/*',  GLOB_ONLYDIR  );
-		foreach ( $subdirs as $subdir ) {
-			$files = $this->get_file_list( $subdir, $mask );
-			$files2 = array_merge( $files2, $files );
-		}
-		return $files2;
-	}
-	*/
 
 	function get_all_patterns( $slug ) {
 		$theme_dir = get_theme_root();
@@ -195,7 +167,6 @@ class OIK_Patterns_From_Htm {
 		}
 		return $files;
 	}
-
 
 	function get_file_list($dir, $mask) {
 		$files = glob($dir .'/' . $mask);
@@ -218,6 +189,4 @@ class OIK_Patterns_From_Htm {
 		//print_r( $files );
 		return $files;
 	}
-
-
 }
