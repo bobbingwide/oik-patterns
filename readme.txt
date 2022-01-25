@@ -1,9 +1,9 @@
 === oik patterns ===
 Contributors:      bobbingwide
 Tags:              block patterns
-Requires at least: 5.6.0
+Requires at least: 5.9-RC3
 Tested up to:      5.9-RC3
-Stable tag:        0.1.2
+Stable tag:        0.1.3
 Requires PHP:      7.3.0
 License:           GPL 3.0
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -26,13 +26,9 @@ Also loads patterns from selected themes which don't include their own logic.
 
 = Which patterns are loaded? =
 
-- Any .html file in the theme's patterns folder. Selected themes only
+- Any .html file in the theme's patterns folder.
 - Cached patterns for a selected theme
-
-Not yet complete
-
-- During preview, if the cached versions are out of date with respect to the theme they are recached.
-
+- During preview, if the cached versions are out of date with respect to the theme they are re-cached.
 
 = Are these patterns translatable? =
 
@@ -45,10 +41,13 @@ AND if I implement code to look in the user's current locale.
 1. None yet
 
 
-== Upgrade Notice 
+== Upgrade Notice ==
+ 
+= 0.1.3 = 
+Upgrade for improved pattern loading of html files from any block based theme.
+
 = 0.1.2 = 
 Upgrade for minor performance improvements #4
-
 
 = 0.1.1 = 
 Update for theme and template validation for preview_theme query arg
@@ -61,6 +60,13 @@ This is a prototype plugin.
 
 
 == Changelog ==
+= 0.1.3 =
+* Changed: Improve list_themes(). Register categories for subfolders #2
+* Changed: Load patterns from subfolders of patterns #2
+* Tested: Requires WordPress 5.9 or WordPress Multi Site
+* Tested: With Gutenberg 12.4.0
+* Tested: With PHP 8.0
+
 = 0.1.2 =
 * Changed: Improve display of cached pattern source - trim blanks #4
 * Changed: Only cache the patterns when necessary. If style.css is newer #4
