@@ -52,15 +52,18 @@ function oik_patterns_init() {
 /**
  * Validates the `preview_theme` query arg, if set.
  *
+ * Note: If preview_theme's not set then the class isn't loaded.
  * @return bool
  */
 function oik_patterns_plugins_loaded() {
 	$is_valid = false;
-	if ( isset( $_REQUEST['preview_theme'])) {
+	if ( isset( $_REQUEST['preview_theme']) ) {
 		$theme = $_REQUEST['preview_theme'];
-		oik_require( 'libs/class-oik-patterns-export.php', 'oik-patterns');
-		$oik_patterns_export = new OIK_patterns_export( $theme );
-		$is_valid = $oik_patterns_export->validate_theme();
+		if ( !empty( $theme ) ) {
+            oik_require('libs/class-oik-patterns-export.php', 'oik-patterns');
+            $oik_patterns_export = new OIK_patterns_export($theme);
+            $is_valid = $oik_patterns_export->validate_theme();
+        }
 	}
 	return $is_valid;
 }

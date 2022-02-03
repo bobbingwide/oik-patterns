@@ -35,9 +35,19 @@ class OIK_Patterns_From_Htm {
 		$this->themes = [];
 		foreach ( $themes as $key => $theme  ) {
 			if ( $theme->is_block_theme() ) {
-				$this->themes[ $key ]=$theme->display( 'Name' );
+			    $name = $theme->display('Name');
+			    $template = $theme->get_template();
+			    if ( $template !== $key ) {
+			        $template_theme = bw_array_get( $themes, $template, null );
+			        if ( null !== $template_theme ) {
+                        $name .= ' child of ';
+                        $name .= $template_theme->display('Name');
+                    }
+                }
+				$this->themes[ $key ]=$name;
 			}
 		}
+		asort( $this->themes, SORT_FLAG_CASE | SORT_NATURAL | SORT_STRING );
 	}
 
 	/**
