@@ -95,20 +95,47 @@ class OIK_Patterns_From_Htm {
 	 * keywords optional |
 	 * viewportWidth optional |
 	 */
-	function load_pattern() {
-		$this->pattern_name =  $this->theme . '/' . $this->filename;
-		$this->pattern_properties = [];
-		$this->pattern_properties['title'] = $this->get_title();
-		$content = file_get_contents( $this->file );
-		if ( $content === false ) {
-			gob();
-		}
-		//bw_trace2( $content, $this->file  );
-		$this->pattern_properties['content'] = $content;
+	function load_pattern()
+    {
+        $this->pattern_name = $this->theme . '/' . $this->filename;
+        $this->pattern_properties = [];
+        $this->pattern_properties['title'] = $this->get_title();
+        $content = file_get_contents($this->file);
+        if ($content === false) {
+            gob();
+        }
+        //bw_trace2( $content, $this->file  );
+        $this->pattern_properties['content'] = $content;
 
-		// Set categories based on sub-folders and add the theme for good measure.
-		$this->pattern_properties['categories'] = $this->categories ;
-		$this->pattern_properties['categories'][] = $this->theme;
+        // Set categories based on sub-folders and add the theme for good measure.
+        $this->pattern_properties['categories'] = $this->categories;
+        $this->pattern_properties['categories'][] = $this->theme;
+    }
+
+    /**
+     * Extends the pattern from a matching .json file
+     *
+     * Enables patterns to be displayed as the pattern to choose for a new page or other CPT
+     */
+    function extend_pattern() {
+	    $pattern_json_file = str_replace( '.html', '.json', $this->file );
+	    if ( file_exists( $pattern_json_file )) {
+	        $pattern_json = file_get_contents( $pattern_json_file );
+	        //echo $pattern_json;
+
+	        $pattern_properties = json_decode( $pattern_json, true );
+	        //print_r( $pattern_properties );
+	        if ( isset( $pattern_properties['blockTypes'])) {
+                $this->pattern_properties['blockTypes'] = $pattern_properties['blockTypes'];
+            }
+            if ( isset( $pattern_properties['postTypes'])) {
+                $this->pattern_properties['postTypes'] = $pattern_properties['postTypes'];
+            }
+
+
+        }
+
+
 	}
 
 	function get_title() {
@@ -161,6 +188,8 @@ class OIK_Patterns_From_Htm {
 
 	function register_pattern() {
 		$this->load_pattern();
+		$this->extend_pattern();
+
 		register_block_pattern( $this->pattern_name, $this->pattern_properties );
 	}
 

@@ -44,9 +44,15 @@ function oik_patterns_loaded() {
  * We're dependent upon oik.
  */
 function oik_patterns_init() {
-	oik_require( 'libs/class-oik-patterns-from-htm.php', 'oik-patterns');
-	$oik_patterns = new OIK_Patterns_From_Htm();
-	$oik_patterns->register_patterns();
+	global $wp_version;
+	if ( version_compare( $wp_version, '5.9' ) >= 0 ) {
+
+		oik_require( 'libs/class-oik-patterns-from-htm.php', 'oik-patterns' );
+		$oik_patterns=new OIK_Patterns_From_Htm();
+		$oik_patterns->register_patterns();
+	} else {
+
+	}
 }
 
 /**
