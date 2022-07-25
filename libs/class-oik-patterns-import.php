@@ -46,8 +46,11 @@ class OIK_patterns_import {
         sdiv( 'pattern');
 		sdiv( 'cached');
         $cached_pattern = $this->get_cached_file( $pattern );
+        //echo "Processing: " . $pattern->title;
+        //echo $cached_pattern;
 
         e( $cached_pattern );
+        //echo "Ended:" . $pattern->title;
         ediv();
         p( $pattern->name );
         if ( isset( $pattern->categories )) {
@@ -56,6 +59,8 @@ class OIK_patterns_import {
         $this->display_cached_pattern_source( $cached_pattern );
 
         ediv();
+        //bw_flush();
+
     }
 
     function display_cached_pattern_source( $cached_pattern ) {
@@ -75,7 +80,8 @@ class OIK_patterns_import {
         if ( file_exists( $file )) {
             $cached_pattern = file_get_contents( $file );
         } else {
-            $cached_pattern = "Missing pattern. File $file doesn't exist";
+            $cached_pattern = "<br /><b>Missing pattern. File $file doesn't exist</b>";
+            //echo $cached_pattern;
         }
         return $cached_pattern;
     }
