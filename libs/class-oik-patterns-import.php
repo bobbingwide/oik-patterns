@@ -24,6 +24,11 @@ class OIK_patterns_import {
         }
     }
 
+    /**
+     * Display the cached patterns in an accordion.
+     *
+     * @return string
+     */
     function display_cached_patterns() {
         //e( "Cached patterns");
         $this->load_patterns_json();
@@ -40,9 +45,18 @@ class OIK_patterns_import {
         return bw_ret();
     }
 
+    /**
+     * Display a cached patterns as an accordion item.
+     * 
+     * @param $pattern
+     */
     function display_pattern( $pattern ) {
+        sdiv('bw_accordion_item');
+        stag('details');
+        stag('summary');
+        e( $pattern->title );
+        etag('summary');
 
-        h3( $pattern->title );
         sdiv( 'pattern');
 		sdiv( 'cached');
         $cached_pattern = $this->get_cached_file( $pattern );
@@ -58,6 +72,8 @@ class OIK_patterns_import {
         }
         $this->display_cached_pattern_source( $cached_pattern );
 
+        ediv();
+        etag('details');
         ediv();
         //bw_flush();
 
@@ -87,11 +103,11 @@ class OIK_patterns_import {
     }
 
     function accordion_start() {
-        oik_require("shortcodes/oik-jquery.php");
-        bw_jquery_enqueue_script("jquery-ui-accordion");
-        bw_jquery_enqueue_style("jquery-ui-accordion");
+        //oik_require("shortcodes/oik-jquery.php");
+        //bw_jquery_enqueue_script("jquery-ui-accordion");
+        //bw_jquery_enqueue_style("jquery-ui-accordion");
         $selector = $this->bw_accordion_id();
-        bw_jquery("#$selector", "accordion", '{ heightStyle: "content"}');
+        //bw_jquery("#$selector", "accordion", '{ heightStyle: "content"}');
         $class = "bw_accordion";
         sdiv( $class, $selector );
     }
@@ -121,28 +137,6 @@ class OIK_patterns_import {
     function accordion_end() {
         ediv();
     }
-
-
-    function format_accordion( $file, $type=null ) {
-        //bw_format_accordion()
-        h3( basename( $file ) );
-        $contents = file_get_contents( $file );
-        $contents = str_replace( '[', '&#091;', $contents);
-        //bw_geshi_it()
-        sdiv();
-        if ( 'patterns' === $type ) {
-            $this->preview_pattern($file, $contents);
-        }
-        stag( 'pre', 'pattern');
-        e( esc_html( $contents ));
-        etag( 'pre');
-
-        ediv();
-
-
-    }
-
-
 
     /**
      * Returns the file name for the pattern.json file for this theme.
