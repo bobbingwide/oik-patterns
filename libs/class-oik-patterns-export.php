@@ -17,6 +17,7 @@ class OIK_patterns_export {
     function __construct( $theme=null ) {
         $this->theme = $theme;
         $this->template = $theme;
+        add_filter( 'the_content', [ $this, 'the_content'], 10, 3 );
     }
 
     function cache_theme_patterns() {
@@ -160,6 +161,7 @@ class OIK_patterns_export {
 		    add_filter( 'template', [$this,'oik_patterns_template']);
 		    add_filter( 'stylesheet', [$this, 'oik_patterns_stylesheet']);
 		    add_action( 'init', [$this,'oik_patterns_maybe_cache_patterns'], 9999 );
+            add_filter( 'pre_get_block_templates', [ $this, 'pre_get_block_templates'], 10, 3 );
 	    }
     	return $is_valid;
 	}
@@ -272,5 +274,46 @@ class OIK_patterns_export {
 		$stylesheet_time = filemtime( $theme_file );
 		return $stylesheet_time;
 	}
+
+    function the_content( $content ) {
+        $pattern = bw_array_get( $_REQUEST, 'pattern', null );
+        if ( $pattern) {
+            //$this->patterns = WP_Block_Patterns_Registry::get_instance()->get_all_registered();
+            //bw_trace2( $this->patterns, "patterns", false);
+            //if ( )
+            //$pattern_content  = bw_array_get( $this->patterns, $pattern, null );
+
+            $rendered_pattern = render_block_core_pattern( [ 'slug' => $pattern]);
+            $content .= $rendered_pattern;
+        }
+        return $content;
+    }
+
+    function pre_get_block_templates( $block_templates, $query, $template_type ) {
+        bw_trace2();
+        if ( null === $block_templates && 'wp_template' === $template_type && 'page-pattern' === $query['slug__in'][0] ) {
+            $block_templates = [];
+            $template = new WP_Block_Template();
+            //$template->wp_id          = $post->ID;
+            //$template->id             = $theme . '//' . ;
+            //$template->theme          = $theme;
+            $pattern = bw_array_get( $_REQUEST, 'pattern', null );
+            //$content = "Generated template for oik-patterns: $pattern";
+            $content = "<!-- wp:pattern {\"slug\":\"$pattern\"} /-->";
+            $template->content        = $content;
+            //$template->slug           = $post->post_name;
+            $template->source         = 'custom';
+            //$template->origin         = ! empty( $origin ) ? $origin : null;
+            //$template->type           = $post->post_type;
+            //$template->description    = $post->post_excerpt;
+            //$template->title          = $post->post_title;
+           // $template->status         = $post->post_status;
+            //$template->has_theme_file = $has_theme_file;
+            //$template->is_custom      = true;
+            //$template->author         = $post->post_author;
+            $block_templates[] = $template;
+        }
+        return $block_templates;
+    }
 
 }

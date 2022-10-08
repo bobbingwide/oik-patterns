@@ -47,7 +47,7 @@ class OIK_patterns_import {
 
     /**
      * Display a cached patterns as an accordion item.
-     * 
+     *
      * @param $pattern
      */
     function display_pattern( $pattern ) {
@@ -62,8 +62,9 @@ class OIK_patterns_import {
         $cached_pattern = $this->get_cached_file( $pattern );
         //echo "Processing: " . $pattern->title;
         //echo $cached_pattern;
-
-        e( $cached_pattern );
+        //print_r( $pattern );
+        e( '<iframe src="/pattern/?preview_theme=' . $this->theme . '&pattern=' . $pattern->name . '" width="100%" height="600px" loading="lazy"></iframe>' );
+        //e( $cached_pattern );
         //echo "Ended:" . $pattern->title;
         ediv();
         p( $pattern->name );
