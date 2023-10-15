@@ -2,7 +2,7 @@
 
 /**
  * Class OIK_Patterns_From_Htm
- * @copyright (C) Copyright Bobbing Wide 2021,2022
+ * @copyright (C) Copyright Bobbing Wide 2021,2022, 2023
  * @package oik-patterns
  */
 
@@ -15,6 +15,8 @@ class OIK_Patterns_From_Htm {
 	private $theme = 'thisis';
 	private $theme_name = 'ThisIs...'; // Theme name
 	private $files = [];
+	private $file;
+	private $categories;
 
 	function __construct() {
 	}
