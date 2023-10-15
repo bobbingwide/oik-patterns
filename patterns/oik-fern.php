@@ -1,11 +1,5 @@
 <?php
 
-
-//$content = 'Classic plastic!';
-
-$content = block_writer( 'core/paragraph', null, 'Person');
-
-
 if ( !function_exists( 'block_writer')) {
 	function block_writer( $block_type_name, $atts=null, $content=null ) {
 		oik_require_lib( 'oik-blocks' );
@@ -17,6 +11,8 @@ if ( !function_exists( 'block_writer')) {
 	}
 
 }
+$content = block_writer( 'core/paragraph', null, 'Person');
+
 return array(
 	'title'      => __( 'Fern', 'oik-blocks' ),
 	'categories' => array( 'hero', 'fern' ),
