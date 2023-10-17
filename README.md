@@ -2,9 +2,9 @@
 ![banner](assets/oik-patterns-banner-772x250.jpg)
 * Contributors:      bobbingwide
 * Tags:              block patterns
-* Requires at least: 5.9-RC3
-* Tested up to:      5.9-RC3
-* Stable tag:        0.1.3
+* Requires at least: 5.9
+* Tested up to:      6.4-beta3
+* Stable tag:        0.2.0
 * Requires PHP:      7.3.0
 * License:           GPL 3.0
 * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -43,6 +43,8 @@ AND if I implement code to look in the user's current locale.
 
 
 ## Upgrade Notice 
+# 0.2.0 
+Upgrade to display a theme's patterns in WP-a2z and to support PHP 8.2
 
 # 0.1.3 
 Upgrade for improved pattern loading of html files from any block based theme.
@@ -61,6 +63,17 @@ This is a prototype plugin.
 
 
 ## Changelog 
+# 0.2.0 
+* Changed: Support PHP 8.2, add PHPUnit tests to load files #11
+* Changed: Prototype displaying patterns in iframes intercepting the page-pattern template #4
+* Changed: Improve Patterns tab Accordion display #9
+* Changed: Remove echos
+* Changed: Register patterns from .html and .json files #6 #8
+* Changed: Sort theme list by name and include parent theme #7
+* Tested: With WordPress 6.4-beta3 and WordPress Multisite
+* Tested: With PHP 8.0, PHP 8.1 and PHP 8.2
+* Tested: With PHPUnit 9.6
+
 # 0.1.3 
 * Changed: Improve list_themes(). Register categories for subfolders #2
 * Changed: Load patterns from subfolders of patterns #2
